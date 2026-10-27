@@ -1,0 +1,44 @@
+import matplotlib.pyplot as plt
+from tensorflow.keras.datasets import boston_housing
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+# 1. Load the Boston Housing Dataset
+(x_train, y_train), (x_test, y_test) = boston_housing.load_data()
+
+# 2. Normalize the Data
+mean = x_train.mean(axis=0)
+std = x_train.std(axis=0)
+
+x_train = (x_train - mean) / std
+x_test = (x_test - mean) / std
+
+# 3. Build the Neural Network Model
+model = Sequential([
+    Dense(32, activation='relu', input_shape=(13,)),
+    Dense(1)
+])
+
+# 4. Compile the Model
+model.compile(
+    optimizer='adam',
+    loss='mse'
+)
+
+# 5. Train the Model for 10 Epochs
+model.fit(
+    x_train,
+    y_train,
+    epochs=10,
+    verbose=1
+)
+
+# 6. Predict House Prices
+predictions = model.predict(x_test)
+
+# 7. Plot Actual vs Predicted Prices
+plt.scatter(y_test, predictions, color='red')
+plt.xlabel('Actual Price')
+plt.ylabel('Predicted Price')
+plt.title('Actual vs Predicted House Prices')
+plt.show()
