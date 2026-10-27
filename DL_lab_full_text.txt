@@ -1,0 +1,406 @@
+================== PAGE 1 ==================
+[No selectable text on this page; the page may contain images or scanned content.]
+
+================== PAGE 2 ==================
+OUTPUT:-
+
+================== PAGE 3 ==================
+Exp-1:- 
+Implement mutli-layer perceptron algorithm for MNISTH and written digital 
+classification.                                                                                                                                                                             
+import numpy as np 
+import matplotlib.pyplot as plt 
+import tensorflow as tf 
+from tensorflow.keras.datasets import mnist 
+from tensorflow.keras.models import Sequential 
+from tensorflow.keras.layers import Dense, Flatten 
+from tensorflow.keras.utils import to_categorical 
+# 1. Load the MNIST Dataset 
+(X_train, y_train), (X_test, y_test) = mnist.load_data() 
+# 2. Preprocess Data 
+# Normalize pixel values from [0, 255] to [0, 1] 
+X_train = X_train / 255.0 
+X_test = X_test / 255.0 
+# One-hot encode the labels (0-9 digits) 
+y_train_cat = to_categorical(y_train, 10) 
+y_test_cat = to_categorical(y_test, 10) 
+# 3. Build Multi-Layer Perceptron (MLP) Model 
+model = Sequential([ 
+    Flatten(input_shape=(28, 28)),     # Input Layer 
+    Dense(128, activation='relu'),      # Hidden Layer 1 
+    Dense(64, activation='relu'),       # Hidden Layer 2 
+    Dense(10, activation='softmax')     # Output Layer 
+]) 
+# 4. Compile the Model 
+model.compile(
+
+================== PAGE 4 ==================
+optimizer='adam', 
+    loss='categorical_crossentropy', 
+    metrics=['accuracy'] 
+) 
+# 5. Train the Model 
+history = model.fit( 
+    X_train, y_train_cat, 
+    epochs=10, 
+    batch_size=32, 
+    validation_split=0.2 
+) 
+# 6. Evaluate Model 
+test_loss, test_acc = model.evaluate(X_test, y_test_cat, verbose=0) 
+print(f"\nTest Accuracy: {test_acc * 100:.2f}%\n") 
+# 7. Plotting Graphs (Accuracy & Loss) 
+plt.figure(figsize=(12, 4)) 
+# Graph 1: Training vs Validation Accuracy 
+plt.subplot(1, 2, 1) 
+plt.plot(history.history['accuracy'], label='Training Accuracy', color='blue') 
+plt.plot(history.history['val_accuracy'], label='Validation Accuracy', color='green') 
+plt.title('Model Accuracy') 
+plt.xlabel('Epoch') 
+plt.ylabel('Accuracy') 
+plt.legend() 
+plt.grid(True) 
+# Graph 2: Training vs Validation Loss 
+plt.subplot(1, 2, 2) 
+plt.plot(history.history['loss'], label='Training Loss', color='red')
+
+================== PAGE 5 ==================
+plt.plot(history.history['val_loss'], label='Validation Loss', color='orange') 
+plt.title('Model Loss') 
+plt.xlabel('Epoch') 
+plt.ylabel('Loss') 
+plt.legend() 
+plt.grid(True) 
+plt.tight_layout() 
+plt.show() 
+# 8. Visualizing Sample Predictions 
+predictions = model.predict(X_test[:5]) 
+plt.figure(figsize=(10, 3)) 
+for i in range(5): 
+    plt.subplot(1, 5, i + 1) 
+    plt.imshow(X_test[i], cmap='gray') 
+    pred = np.argmax(predictions[i]) 
+    actual = y_test[i] 
+    plt.title(f"Pred: {pred}\nActual: {actual}") 
+    plt.axis('off') 
+ 
+plt.tight_layout() 
+plt.show()
+
+================== PAGE 6 ==================
+OUTPUT:-
+
+================== PAGE 7 ==================
+Exp-2:- 
+Design a neural network for classifying movie reviewa(binary classification) using 
+IMDB dataset 
+import numpy as np 
+import matplotlib.pyplot as plt 
+from tensorflow.keras.datasets import imdb 
+from tensorflow.keras.models import Sequential 
+from tensorflow.keras.layers import Dense 
+# 1. Load Data & Vectorize 
+NUM_WORDS = 10000 
+(x_train_raw, y_train), (x_test_raw, y_test) = imdb.load_data(num_words=NUM_WORDS) 
+def vectorize(seqs, dim=NUM_WORDS): 
+    results = np.zeros((len(seqs), dim)) 
+    for i, s in enumerate(seqs): 
+        results[i, s] = 1.0 
+    return results 
+x_train, x_test = vectorize(x_train_raw), vectorize(x_test_raw) 
+y_train, y_test = np.asarray(y_train).astype('float32'), np.asarray(y_test).astype('float32') 
+# 2. Build & Compile Model 
+model = Sequential([ 
+    Dense(16, activation='relu', input_shape=(NUM_WORDS,)), 
+    Dense(16, activation='relu'), 
+    Dense(1, activation='sigmoid') 
+]) 
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']) 
+# 3. Train Model 
+history = model.fit(x_train, y_train, epochs=8, batch_size=512, validation_split=0.2, 
+verbose=1)
+
+================== PAGE 8 ==================
+# 4. Single Graph Plotting (Accuracy & Loss together) 
+plt.figure(figsize=(8, 5)) 
+epochs = range(1, len(history.history['accuracy']) + 1) 
+# Plot Loss & Accuracy lines on single figure 
+plt.plot(epochs, history.history['loss'], 'r-o', label='Training Loss') 
+plt.plot(epochs, history.history['val_loss'], 'r--', label='Validation Loss') 
+plt.plot(epochs, history.history['accuracy'], 'b-o', label='Training Accuracy') 
+plt.plot(epochs, history.history['val_accuracy'], 'b--', label='Validation Accuracy') 
+plt.title('Training & Validation Performance') 
+plt.xlabel('Epochs') 
+plt.ylabel('Value') 
+plt.legend() 
+plt.grid(True) 
+plt.show() 
+# 5. Evaluate 
+test_loss, test_acc = model.evaluate(x_test, y_test, verbose=0) 
+print(f"Test Accuracy: {test_acc * 100:.2f}%")
+
+================== PAGE 9 ==================
+[No selectable text on this page; the page may contain images or scanned content.]
+
+================== PAGE 10 ==================
+OUTPUT:-
+
+================== PAGE 11 ==================
+Exp-3:- 
+Design a neural Network for classifying news wires(multi class 
+classification) using Reuters dataset. 
+import numpy as np 
+import matplotlib.pyplot as plt 
+from tensorflow.keras.datasets import reuters 
+from tensorflow.keras.models import Sequential 
+from tensorflow.keras.layers import Dense 
+from tensorflow.keras.utils import to_categorical 
+# 1. Load Data & Preprocess (46 classes) 
+NUM_WORDS = 10000 
+(x_train_raw, y_train_raw), (x_test_raw, y_test_raw) = 
+reuters.load_data(num_words=NUM_WORDS) 
+def vectorize(seqs, dim=NUM_WORDS): 
+    results = np.zeros((len(seqs), dim)) 
+    for i, s in enumerate(seqs): 
+        results[i, s] = 1.0 
+    return results 
+x_train, x_test = vectorize(x_train_raw), vectorize(x_test_raw) 
+y_train, y_test = to_categorical(y_train_raw), to_categorical(y_test_raw) 
+# 2. Build & Compile Model 
+model = Sequential([ 
+    Dense(64, activation='relu', input_shape=(NUM_WORDS,)), 
+    Dense(64, activation='relu'), 
+    Dense(46, activation='softmax')  # 46 categories for multi-class 
+])
+
+================== PAGE 12 ==================
+model.compile(optimizer='adam', loss='categorical_crossentropy', 
+metrics=['accuracy']) 
+# 3. Train Model 
+history = model.fit(x_train, y_train, epochs=9, batch_size=512, validation_split=0.2, 
+verbose=1) 
+# 4. Single Graph Plotting (Accuracy & Loss) 
+plt.figure(figsize=(8, 5)) 
+epochs = range(1, len(history.history['accuracy']) + 1) 
+plt.plot(epochs, history.history['loss'], 'r-o', label='Training Loss') 
+plt.plot(epochs, history.history['val_loss'], 'r--', label='Validation Loss') 
+plt.plot(epochs, history.history['accuracy'], 'b-o', label='Training Accuracy') 
+plt.plot(epochs, history.history['val_accuracy'], 'b--', label='Validation Accuracy') 
+plt.title('Reuters Multi-Class Classification Performance') 
+plt.xlabel('Epochs') 
+plt.ylabel('Value') 
+plt.legend() 
+plt.grid(True) 
+plt.show() 
+# 5. Evaluate 
+test_loss, test_acc = model.evaluate(x_test, y_test, verbose=0) 
+print(f"Test Accuracy: {test_acc * 100:.2f}%")
+
+================== PAGE 13 ==================
+[No selectable text on this page; the page may contain images or scanned content.]
+
+================== PAGE 14 ==================
+OUTPUT:-
+
+================== PAGE 15 ==================
+Exp-4:- 
+Design a neural network for predicting house prices using Boston Housing price 
+dataset. 
+import matplotlib.pyplot as plt 
+from tensorflow.keras.datasets import boston_housing 
+from tensorflow.keras.models import Sequential 
+from tensorflow.keras.layers import Dense 
+ 
+# Data load & normalize 
+(x_tr, y_tr), (x_te, y_te) = boston_housing.load_data() 
+x_tr = (x_tr - x_tr.mean(axis=0)) / x_tr.std(axis=0) 
+x_te = (x_te - x_te.mean(axis=0)) / x_te.std(axis=0) 
+ 
+# Build & train model 
+model = Sequential([Dense(64, 'relu', input_shape=(13,)), Dense(64, 'relu'), Dense(1)]) 
+model.compile('adam', loss='mse') 
+history = model.fit(x_tr, y_tr, validation_data=(x_te, y_te), epochs=80, batch_size=16, 
+verbose=0) 
+ 
+# Plot Training & Testing Loss Graph 
+plt.plot(history.history['loss'], label='Train Loss') 
+plt.plot(history.history['val_loss'], label='Validation Loss') 
+plt.title('Boston Housing Price Loss Graph') 
+plt.xlabel('Epochs') 
+plt.ylabel('Loss (MSE)') 
+plt.legend() 
+plt.show()
+
+================== PAGE 16 ==================
+OUTPUT:-
+
+================== PAGE 17 ==================
+Exp-5:- 
+Build a Convolution Neural Network for MNISTH and written Digit Classification. 
+import matplotlib.pyplot as plt 
+from tensorflow.keras.datasets import boston_housing 
+from tensorflow.keras.models import Sequential 
+from tensorflow.keras.layers import Dense 
+ 
+# Data load & normalize 
+(x1, y1), (x2, y2) = boston_housing.load_data() 
+x1, x2 = (x1 - x1.mean(0)) / x1.std(0), (x2 - x1.mean(0)) / x1.std(0) 
+ 
+# Model & Train with 10 Epochs 
+model = Sequential([Dense(32, 'relu', input_shape=(13,)), Dense(1)]) 
+model.compile('adam', loss='mse') 
+model.fit(x1, y1, epochs=10, verbose=1) 
+ 
+# Scatter Plot (Actual vs Predicted Prices) 
+p = model.predict(x2) 
+plt.scatter(y2, p, color='red') 
+plt.xlabel('Actual Price') 
+plt.ylabel('Predicted Price') 
+plt.title('Actual vs Predicted Scatter Plot') 
+plt.show()
+
+================== PAGE 18 ==================
+OUTPUT:-
+
+================== PAGE 19 ==================
+Exp-6:- 
+Build a Convolution Neural Network for simple  image(dogs and cats)classification. 
+import tensorflow as tf 
+from tensorflow.keras import layers, Sequential 
+import matplotlib.pyplot as plt 
+import numpy as np 
+# CIFAR10 data load & Cat (3), Dog (5) filter 
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data() 
+idx = np.where((y_train == 3) | (y_train == 5))[0][:300] 
+idx_t = np.where((y_test == 3) | (y_test == 5))[0][:10] 
+x_tr, y_tr = x_train[idx], (y_train[idx] == 5).astype(int) 
+x_te, y_te = x_test[idx_t], (y_test[idx_t] == 5).astype(int) 
+model = Sequential([ 
+    layers.Rescaling(1./255, input_shape=(32, 32, 3)), 
+    layers.Conv2D(16, 3, activation="relu"), 
+    layers.MaxPooling2D(), 
+    layers.Flatten(), 
+    layers.Dense(1, activation="sigmoid") 
+]) 
+model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"]) 
+model.fit(x_tr, y_tr, epochs=3, batch_size=32, verbose=0) 
+pred = (model.predict(x_te) > 0.5).astype(int) 
+plt.plot(y_te, 'ro', label='Actual') 
+plt.plot(pred, 'bx', label='Predicted') 
+plt.yticks([0, 1], ['Cat', 'Dog']) 
+plt.title('Dog vs Cat Classification') 
+plt.legend() 
+plt.show()
+
+================== PAGE 20 ==================
+OUTPUT:-
+
+================== PAGE 21 ==================
+Exp-7:- 
+Use a pre-trained convolution neural network(VGG16) for image 
+classification. 
+import numpy as np 
+import matplotlib.pyplot as plt 
+from tensorflow.keras.applications.vgg16 import VGG16, preprocess_input, 
+decode_predictions 
+# 1. Model & Random Image setup 
+model = VGG16(weights='imagenet') 
+img = np.random.randint(0, 255, (1, 224, 224, 3), dtype=np.uint8) 
+# 2. Prediction 
+preds = model.predict(preprocess_input(img)) 
+decoded = decode_predictions(preds, top=3)[0] 
+# Print Predictions 
+for i, (_, label, score) in enumerate(decoded): 
+    print(f"{i + 1}. {label}: {score * 100:.2f}%") 
+# 3. Bar Chart Visualization (Mee Graph Alaane Undhi) 
+labels = [item[1] for item in decoded] 
+scores = [item[2] * 100 for item in decoded] 
+plt.figure(figsize=(7, 4)) 
+plt.barh(labels, scores, color=['#3498db', '#2ecc71', '#e74c3c']) 
+plt.xlabel('Probability (%)') 
+plt.title('VGG16 Classification Prediction Probabilities', fontweight='bold') 
+plt.gca().invert_yaxis() 
+plt.grid(axis='x', linestyle='--', alpha=0.7) 
+plt.show()
+
+================== PAGE 22 ==================
+OUTPUT:-
+
+================== PAGE 23 ==================
+Exp-8:- 
+Implement one hot encoding of words or characters. 
+import numpy as np 
+import matplotlib.pyplot as plt 
+import seaborn as sns 
+# 1. Input Sentences (Text Data) 
+sentences = ["deep learning lab", "neural network model"] 
+# 2. Extract Unique Words (Vocabulary) 
+words = sorted(list(set(" ".join(sentences).split()))) 
+vocab_size = len(words) 
+word_to_index = {word: i for i, word in enumerate(words)} 
+# 3. Create One-Hot Encodings Matrix 
+one_hot_matrix = np.zeros((len(words), vocab_size)) 
+for i, word in enumerate(words): 
+    one_hot_matrix[i, word_to_index[word]] = 1 
+# Display Word to One-Hot Vector Mapping 
+print("Vocabulary Mapping:") 
+for word, idx in word_to_index.items(): 
+    print(f"'{word}': {one_hot_matrix[idx].astype(int)}") 
+# 4. Visualization: One-Hot Encoding Heatmap Matrix 
+plt.figure(figsize=(7, 5)) 
+sns.heatmap(one_hot_matrix, annot=True, cbar=False, cmap="Blues", 
+            xticklabels=words, yticklabels=words, fmt=".0f", linewidths=1) 
+ 
+plt.title("One-Hot Encoding Matrix Representation", fontweight="bold") 
+plt.xlabel("Encoded Vector Index (One-Hot)") 
+plt.ylabel("Words") 
+plt.show()
+
+================== PAGE 24 ==================
+OUTPUT:-
+
+================== PAGE 25 ==================
+Exp-9:- 
+Implement word embeddings for IMDB dataset. 
+import tensorflow as tf 
+import matplotlib.pyplot as plt 
+# Load IMDB dataset 
+vocab = 5000 
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.imdb.load_data( 
+    num_words=vocab 
+) 
+# Padding 
+x_train = tf.keras.utils.pad_sequences(x_train, maxlen=100) 
+x_test = tf.keras.utils.pad_sequences(x_test, maxlen=100) 
+# Word Embedding Model 
+model = tf.keras.Sequential([ 
+    tf.keras.layers.Embedding(vocab, 32, input_length=100), 
+    tf.keras.layers.GlobalAveragePooling1D(), 
+    tf.keras.layers.Dense(1, activation="sigmoid") 
+]) 
+model.compile( 
+    optimizer="adam", 
+    loss="binary_crossentropy", 
+    metrics=["accuracy"] 
+) 
+# Train 
+history = model.fit( 
+    x_train, y_train, 
+    epochs=3, 
+    batch_size=64,
+
+================== PAGE 26 ==================
+validation_split=0.2 
+) 
+# Test 
+loss, acc = model.evaluate(x_test, y_test, verbose=0) 
+print("Test Accuracy:", round(acc, 4)) 
+# Accuracy graph 
+plt.plot(history.history["accuracy"], label="Training") 
+plt.plot(history.history["val_accuracy"], label="Validation") 
+plt.title("IMDB Word Embedding Accuracy") 
+plt.xlabel("Epoch") 
+plt.ylabel("Accuracy") 
+plt.legend() 
+plt.show()
+
